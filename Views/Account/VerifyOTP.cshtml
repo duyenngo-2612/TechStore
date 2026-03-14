@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Xác nhận OTP";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white text-center">
+                <h4>NHẬP MÃ XÁC NHẬN</h4>
+            </div>
+            <div class="card-body text-center">
+                <p>Một mã gồm 6 chữ số đã được gửi đến hộp thư của bạn.</p>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                <form asp-action="VerifyOTP" method="post">
+                    <div class="form-group mb-3">
+                        <input type="text" name="otp" class="form-control text-center fs-3 fw-bold" placeholder="------" maxlength="6" required />
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">XÁC NHẬN MÃ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

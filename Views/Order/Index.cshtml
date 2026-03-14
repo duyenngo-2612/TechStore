@@ -1,0 +1,150 @@
+﻿@model IEnumerable<TechStore.Models.Order>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    var currentStatus = ViewBag.CurrentStatus as int?;
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="d-flex justify-content-between text-center fw-bold order-tabs">
+            <a href="@Url.Action("Index", new { status = (int?)null })" class="flex-fill py-3 tab-item @(currentStatus == null ? "active" : "")">Tất cả</a>
+            <a href="@Url.Action("Index", new { status = 0 })" class="flex-fill py-3 tab-item @(currentStatus == 0 ? "active" : "")">Chờ xác nhận</a>
+            <a href="@Url.Action("Index", new { status = 1 })" class="flex-fill py-3 tab-item @(currentStatus == 1 ? "active" : "")">Đang chuẩn bị</a>
+            <a href="@Url.Action("Index", new { status = 2 })" class="flex-fill py-3 tab-item @(currentStatus == 2 ? "active" : "")">Đang giao</a>
+            <a href="@Url.Action("Index", new { status = 3 })" class="flex-fill py-3 tab-item @(currentStatus == 3 ? "active" : "")">Hoàn thành</a>
+            <a href="@Url.Action("Index", new { status = 4 })" class="flex-fill py-3 tab-item @(currentStatus == 4 ? "active" : "")">Đã hủy</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success shadow-sm"><i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger shadow-sm"><i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm text-center py-5">
+            <div class="text-muted mb-3"><i class="bi bi-receipt fs-1"></i></div>
+            <h5 class="fw-bold">Chưa có đơn hàng nào</h5>
+            <p class="text-muted">Bạn chưa có đơn hàng nào trong mục này.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-danger mt-2 px-4 py-2">Tiếp tục mua sắm</a>
+        </div>
+    }
+    else
+    {
+        foreach (var order in Model)
+        {
+            <div class="card border-0 shadow-sm rounded-3 mb-4 order-card">
+                <div class="card-header bg-white border-bottom-0 pt-3 pb-2 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-shop text-danger me-2"></i>TechStore Official</span>
+                    <span class="text-uppercase fw-bold text-danger status-label">
+                        @switch (order.Status)
+                        {
+                            case 0:
+                                <text><i class="bi bi-hourglass-split"></i> Chờ xác nhận</text>
+                                ; break;
+                            case 1:
+
+                                <text><i class="bi bi-box-seam"></i> Đang chuẩn bị</text>
+                                ; break;
+                            case 2:
+
+                                <text><i class="bi bi-truck"></i> Đang giao hàng</text>
+                                ; break;
+                            case 3:
+
+                                <text><i class="bi bi-check2-circle"></i> Đã hoàn thành</text>
+                                ; break;
+                            case 4:
+
+                                <text><i class="bi bi-x-circle text-secondary"></i> Đã hủy</text>
+                                ; break;
+                        }
+                    </span>
+                </div>
+
+                <div class="card-body py-2">
+                    @foreach (var item in order.OrderDetails)
+                    {
+                        <div class="d-flex mb-3 align-items-center border-bottom pb-3">
+                            <img src="@item.Product.ImageUrl" alt="@item.Product.ProductName" class="rounded" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #eee;">                            <div class="ms-3 flex-grow-1">
+                                <h6 class="mb-1 fw-bold">@item.Product.ProductName</h6>
+                                <p class="mb-0 text-muted small">x @item.Quantity</p>
+                            </div>
+                            <div class="text-end fw-bold text-danger">
+                                @item.UnitPrice.ToString("#,##0") ₫
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer bg-white border-top-0 pb-3">
+                    <div class="d-flex justify-content-end align-items-center mb-3">
+                        <span class="me-3">Thành tiền:</span>
+                        <span class="fs-4 fw-bold text-danger">@order.TotalAmount.ToString("#,##0") ₫</span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        @if (order.Status == 0)
+                        {
+                            <form asp-action="CancelOrder" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <button type="submit" class="btn btn-outline-secondary px-4">Hủy Đơn Hàng</button>
+                            </form>
+                        }
+                        else if (order.Status == 3)
+                        {
+                            <a href="#" class="btn btn-danger px-4">Mua Lại</a>
+                            <a href="#" class="btn btn-outline-danger px-4">Đánh Giá</a>
+                        }
+                        else if (order.Status == 4)
+                        {
+                            <a href="#" class="btn btn-danger px-4">Mua Lại</a>
+                        }
+                        <a href="#" class="btn btn-outline-dark px-4">Xem Chi Tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<style>
+    /* Style cho Thanh Tab kiểu Shopee */
+    .order-tabs {
+        background: #fff;
+    }
+
+    .tab-item {
+        color: #555;
+        text-decoration: none;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+    }
+
+        .tab-item:hover {
+            color: #D10024;
+        }
+
+        .tab-item.active {
+            color: #D10024;
+            border-bottom: 3px solid #D10024;
+        }
+
+    /* Style cho Card Đơn hàng */
+    .order-card {
+        transition: transform 0.2s;
+    }
+
+        .order-card:hover {
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+        }
+
+    .status-label {
+        font-size: 0.9rem;
+    }
+</style>

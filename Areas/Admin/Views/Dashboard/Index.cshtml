@@ -1,0 +1,167 @@
+﻿@model IEnumerable<TechStore.Models.Product>
+@{
+    ViewData["Title"] = "Tổng quan";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-1">
+    <h3 class="fw-bold m-0">Tổng quan</h3>
+</div>
+<p class="text-muted mb-4">Xem thống kê và quản lý cửa hàng</p>
+
+<div class="row mb-4 g-3">
+    <div class="col-md-3">
+        <div class="card card-stat p-3 h-100 border-0 shadow-sm">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="text-muted mb-2 fs-6">Tổng sản phẩm</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.TotalProducts</h3>
+                </div>
+                <div class="bg-primary bg-opacity-10 p-2 rounded text-primary">
+                    <i class="bi bi-box fs-5"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-stat p-3 h-100 border-0 shadow-sm">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="text-muted mb-2 fs-6">Đơn hàng</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.TotalOrders</h3>
+                </div>
+                <div class="bg-success bg-opacity-10 p-2 rounded text-success">
+                    <i class="bi bi-bag fs-5"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-stat p-3 h-100 border-0 shadow-sm">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="text-muted mb-2 fs-6">Đánh giá</p>
+                    <h3 class="fw-bold mb-0">@ViewBag.TotalReviews</h3>
+                </div>
+                <div class="bg-warning bg-opacity-10 p-2 rounded text-warning">
+                    <i class="bi bi-star fs-5"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-stat p-3 h-100 border-0 shadow-sm">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="text-muted mb-2 fs-6">Doanh thu</p>
+                    <h3 class="fw-bold mb-0">@string.Format("{0:#,##0}đ", ViewBag.TotalRevenue ?? 0)</h3>
+                </div>
+                <div class="bg-danger bg-opacity-10 p-2 rounded text-danger">
+                    <i class="bi bi-graph-up-arrow fs-5"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card card-stat h-100 p-2 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h6 class="fw-bold mb-0">Đơn hàng gần đây</h6>
+
+                        <a href="/Order/AdminIndex" class="text-danger small text-decoration-none">
+                            Xem tất cả <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                @{
+                    var recentOrders = ViewBag.RecentOrders as List<TechStore.Models.Order>;
+                }
+
+                @if (recentOrders != null && recentOrders.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-muted small">
+                                <tr>
+                                    <th>Mã ĐH</th>
+                                    <th>Khách hàng</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var o in recentOrders)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="text-danger fw-bold">#@o.OrderId</span>
+                                        </td>
+                                        <td class="small fw-bold">@o.User?.FullName</td>
+                                        <td class="small fw-bold text-dark">@o.TotalAmount.ToString("#,##0")đ</td>
+                                        <td>
+                                            @switch (o.Status)
+                                            {
+                                                case 0:
+                                                    <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                                    ; break;
+                                                case 1:
+
+                                                    <span class="badge bg-info text-dark">Đã xác nhận</span>
+                                                    ; break;
+                                                case 2:
+
+                                                    <span class="badge bg-primary">Đang giao</span>
+                                                    ; break;
+                                                case 3:
+
+                                                    <span class="badge bg-success">Hoàn thành</span>
+                                                    ; break;
+                                                case 4:
+
+                                                    <span class="badge bg-danger">Đã hủy</span>
+                                                    ; break;
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+                        <p class="text-muted mb-0">Chưa có đơn hàng nào</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card card-stat h-100 p-2 border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="fw-bold mb-4">Sản phẩm bán chạy</h6>
+                @foreach (var item in Model)
+                {
+                    <div class="d-flex align-items-center mb-3 pb-2 border-bottom">
+                        <img src="@item.ImageUrl" class="rounded me-3 border" style="width: 50px; height: 50px; object-fit: cover; background:#fff;" alt="@item.ProductName" onerror="this.src='/images/default.jpg'">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 fw-bold text-truncate" style="max-width: 250px; font-size:14px;">@item.ProductName</h6>
+                            <small class="text-muted">@(item.Category?.CategoryName ?? "Chưa phân loại")</small>
+                        </div>
+                        <div class="text-danger fw-bold fs-6">
+                            @string.Format("{0:#,##0}đ", item.Price)
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+﻿@model IEnumerable<TechStore.Models.OrderDetail>
+
+<h1>Chi tiết đơn hàng #@ViewBag.OrderId</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Product.ProductName</td>
+                <td>@item.Quantity</td>
+                <td>@item.UnitPrice.ToString("N0") đ</td>
+                <td>
+                    @* QUAN TRỌNG: Truyền cả 2 tham số ID *@
+                    <form asp-action="Delete" method="post" style="display:inline">
+                        <input type="hidden" name="orderId" value="@item.OrderId" />
+                        <input type="hidden" name="productId" value="@item.ProductId" />
+                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

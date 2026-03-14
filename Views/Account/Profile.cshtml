@@ -1,0 +1,100 @@
+﻿@model TechStore.Models.User
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                <div class="bg-dark p-4 text-center">
+                    <div class="rounded-circle bg-danger d-inline-flex align-items-center justify-content-center text-white mb-3" style="width: 60px; height: 60px;">
+                        <i class="bi bi-person-bounding-box fs-2"></i>
+                    </div>
+                    <h6 class="text-white mb-0">@Model.FullName</h6>
+                    <p class="text-white-50 small">Khách hàng thân thiết</p>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#" class="list-group-item list-group-item-action active"><i class="bi bi-person-vcard me-2"></i> Thông tin tài khoản</a>
+                    <a asp-action="ChangePassword" class="list-group-item list-group-item-action"><i class="bi bi-key me-2"></i> Đổi mật khẩu</a>
+                    <a asp-controller="Order" asp-action="Index" class="list-group-item list-group-item-action"><i class="bi bi-box-seam me-2"></i> Đơn hàng của tôi</a>
+                    <a asp-action="Logout" class="list-group-item list-group-item-action text-danger"><i class="bi bi-power me-2"></i> Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="card border-0 shadow-sm rounded-3 p-4">
+                <h4 class="fw-bold mb-4 border-bottom pb-3 text-uppercase"><i class="bi bi-pencil-square text-danger"></i> Quản lý tài khoản</h4>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success border-0 shadow-sm py-2 mb-4"><i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]</div>
+                }
+
+                <form asp-action="UpdateProfile" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Họ và tên</label>
+                            <input type="text" asp-for="FullName" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Số điện thoại</label>
+                            <input type="text" asp-for="PhoneNumber" class="form-control" placeholder="Chưa cập nhật">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Gmail liên kết</label>
+                            <input type="email" asp-for="Email" class="form-control" required>
+                        </div>
+
+                        <div class="col-12 mt-4"><h6 class="fw-bold text-danger border-start border-danger border-3 ps-2">ĐỊA CHỈ NHẬN HÀNG</h6></div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Tỉnh / Thành phố</label>
+                            <input type="text" asp-for="TinhTp" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Quận / Huyện</label>
+                            <input type="text" asp-for="QuanHuyen" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Phường / Xã</label>
+                            <input type="text" asp-for="PhuongXa" class="form-control">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Địa chỉ cụ thể</label>
+                            <input type="text" asp-for="DiaChiCuThe" class="form-control" placeholder="Số nhà, tên đường...">
+                        </div>
+
+                        <div class="col-12 mt-4"><h6 class="fw-bold text-danger border-start border-danger border-3 ps-2">LIÊN KẾT NGÂN HÀNG</h6></div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Ngân hàng</label>
+                            <input type="text" asp-for="BankName" class="form-control" placeholder="VD: Vietcombank">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Số tài khoản</label>
+                            <input type="text" asp-for="BankAccountNumber" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-end">
+                        <button type="submit" class="btn btn-danger px-5 fw-bold shadow-sm rounded-pill">
+                            <i class="bi bi-save me-1"></i> LƯU THAY ĐỔI
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        border-color: #D10024;
+        box-shadow: 0 0 0 0.25rem rgba(209, 0, 36, 0.1);
+    }
+
+    .list-group-item.active {
+        background-color: #D10024;
+        border-color: #D10024;
+    }
+</style>

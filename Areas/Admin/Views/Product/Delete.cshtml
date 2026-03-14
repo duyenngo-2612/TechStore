@@ -1,0 +1,43 @@
+﻿@model TechStore.Models.Product
+
+@{
+    ViewData["Title"] = "Xóa sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="text-danger">Xóa sản phẩm</h2>
+    <h3>Bạn có chắc chắn muốn xóa sản phẩm này không?</h3>
+    <p class="text-muted">Lưu ý: Hành động này không thể hoàn tác.</p>
+    <hr />
+
+    <div class="card mb-4" style="max-width: 600px;">
+        <div class="row g-0">
+            <div class="col-md-4 d-flex align-items-center justify-content-center p-2">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.ProductName">
+                }
+                else
+                {
+                    <span class="text-muted">Chưa có ảnh</span>
+                }
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">@Model.ProductName</h5>
+                    <p class="card-text mb-1"><strong>Danh mục:</strong> @Model.Category.CategoryName</p>
+                    <p class="card-text mb-1"><strong>Thương hiệu:</strong> @Model.Brand.BrandName</p>
+                    <p class="card-text mb-1"><strong>Giá bán:</strong> <span class="text-danger fw-bold">@string.Format("{0:#,##0} VNĐ", Model.Price)</span></p>
+                    <p class="card-text mb-1"><strong>Tồn kho:</strong> @Model.StockQuantity</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="ProductId" />
+        <button type="submit" class="btn btn-danger px-4 fw-bold">Xác nhận Xóa</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Hủy & Quay lại</a>
+    </form>
+</div>

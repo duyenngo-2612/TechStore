@@ -1,0 +1,83 @@
+﻿@model TechStore.Models.Product
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Chỉnh sửa sản phẩm: <span class="text-primary">@Model.ProductName</span></h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="ProductId" />
+                <input type="hidden" asp-for="CreatedAt" />
+
+                <div class="mb-3">
+                    <label asp-for="ProductName" class="control-label fw-bold">Tên sản phẩm</label>
+                    <input asp-for="ProductName" class="form-control" required />
+                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CategoryId" class="control-label fw-bold">Danh mục</label>
+                        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="BrandId" class="control-label fw-bold">Thương hiệu</label>
+                        <select asp-for="BrandId" class="form-select" asp-items="ViewBag.BrandId"></select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Price" class="control-label fw-bold">Giá bán (VNĐ)</label>
+                        <input asp-for="Price" type="number" step="1" class="form-control" required />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StockQuantity" class="control-label fw-bold">Số lượng tồn kho</label>
+                        <input asp-for="StockQuantity" type="number" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ImageUrl" class="control-label fw-bold">Đường dẫn hình ảnh (URL)</label>
+                    <input asp-for="ImageUrl" class="form-control" />
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mt-2">
+                            <p class="mb-1 text-muted">Ảnh hiện tại:</p>
+                            <img src="@Model.ImageUrl" alt="Hình ảnh sản phẩm" style="max-width: 150px; border: 1px solid #ccc; border-radius: 5px;" />
+                        </div>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="control-label fw-bold">Mô tả sản phẩm</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Specifications" class="control-label fw-bold">Thông số kỹ thuật</label>
+                    <textarea asp-for="Specifications" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsActive" /> <strong>Hiển thị sản phẩm (Active)</strong>
+                    </label>
+                </div>
+
+                <div class="mt-4 mb-5">
+                    <button type="submit" class="btn btn-warning px-4 text-dark fw-bold">Lưu thay đổi</button>
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Quay lại danh sách</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

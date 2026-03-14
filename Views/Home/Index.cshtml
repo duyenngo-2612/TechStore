@@ -1,0 +1,63 @@
+﻿@model IEnumerable<TechStore.Models.Product>
+@{
+    ViewData["Title"] = "Trang Chủ";
+    var categories = ViewBag.Categories as List<TechStore.Models.Category>;
+}
+
+<div class="banner-electro-gradient mb-5">
+    <div class="row align-items-center">
+        <div class="col-md-7 ps-md-5">
+            <h1 class="display-4 fw-bold text-white mb-3">Điện Tử Chính Hãng</h1>
+            <p class="fs-5 text-white-50 mb-4">Điện thoại - Máy tính - Phụ kiện công nghệ đỉnh cao</p>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge bg-white text-primary p-2 px-3 rounded-pill"><i class="bi bi-lightning-fill text-warning"></i> Giao hàng nhanh 2h</span>
+                <span class="badge bg-white text-primary p-2 px-3 rounded-pill"><i class="bi bi-gift-fill text-danger"></i> Tặng phụ kiện</span>
+                <span class="badge bg-white text-primary p-2 px-3 rounded-pill"><i class="bi bi-credit-card-fill text-success"></i> Trả góp 0%</span>
+            </div>
+        </div>
+        <div class="col-md-5 d-none d-md-block text-center">
+            <img src="/images/banner-side.png" class="img-fluid" style="max-height: 250px;">
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="category-nav-scroll mb-4 d-flex justify-content-center gap-2 overflow-auto pb-2">
+        <button class="btn btn-category active" onclick="filterCategory(0, this)">Tất cả</button>
+        @if (categories != null)
+        {
+            foreach (var cat in categories)
+            {
+                <button class="btn btn-category" onclick="filterCategory(@cat.CategoryId, this)">@cat.CategoryName</button>
+            }
+        }
+    </div>
+
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <h4 class="fw-bold mb-0">SẢN PHẨM MỚI NHẤT</h4>
+        <a href="/Product" class="text-decoration-none text-danger fw-bold small">Xem tất cả <i class="bi bi-chevron-right"></i></a>
+    </div>
+
+    <div id="product-list-container">
+        @await Html.PartialAsync("_ProductListPartial", Model)
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterCategory(catId, btn) {
+            // Đổi style cho nút đang chọn
+            $('.btn-category').removeClass('active');
+            $(btn).addClass('active');
+
+            // Hiệu ứng loading nhẹ
+            $('#product-list-container').css('opacity', '0.5');
+
+            // Gửi yêu cầu lọc lên server
+            $.get('/Home/GetProductsByCategory?categoryId=' + catId, function (data) {
+                $('#product-list-container').html(data);
+                $('#product-list-container').css('opacity', '1');
+            });
+        }
+    </script>
+}

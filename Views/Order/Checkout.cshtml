@@ -1,0 +1,129 @@
+﻿@model IEnumerable<TechStore.Models.Cart>
+@{
+    ViewData["Title"] = "Thanh toán đơn hàng";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 p-4 rounded-3">
+                <h4 class="fw-bold mb-4 text-primary"><i class="bi bi-truck"></i> THÔNG TIN GIAO HÀNG</h4>
+                <form asp-action="PlaceOrder" asp-controller="Order" method="post">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Họ và tên người nhận</label>
+                        <input type="text" class="form-control" value="@Context.Session.GetString("UserName")" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Địa chỉ nhận hàng cụ thể</label>
+                        <textarea name="address" class="form-control" rows="3" placeholder="Ví dụ: 123 Lê Lợi, Quận 1, TP.HCM" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Phương thức thanh toán</label>
+                        <div class="form-check border p-3 rounded-3 mb-2">
+                            <input class="form-check-input ms-1" type="radio" name="paymentMethod" value="COD" id="cod" checked>
+                            <label class="form-check-label ms-4" for="cod">
+                                <i class="bi bi-cash-stack"></i> Thanh toán khi nhận hàng (COD)
+                            </label>
+                        </div>
+                        <div class="form-check border p-3 rounded-3">
+                            <input class="form-check-input ms-1" type="radio" name="paymentMethod" value="Banking" id="banking">
+                            <label class="form-check-label ms-4" for="banking">
+                                <i class="bi bi-credit-card"></i> Chuyển khoản ngân hàng
+                            </label>
+                        </div>
+                    </div>
+
+                    @* Lưu lại VoucherId để gửi lên hàm PlaceOrder *@
+                    <input type="hidden" name="voucherId" value="@ViewBag.VoucherId" />
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mt-4 fw-bold rounded-pill py-3">
+                        XÁC NHẬN ĐẶT HÀNG <i class="bi bi-check-circle"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 p-4 bg-light rounded-3">
+                <h4 class="fw-bold mb-4">ĐƠN HÀNG CỦA BẠN</h4>
+                <div class="list-group mb-3">
+                    @foreach (var item in Model)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center border-0 bg-transparent px-0">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-secondary rounded-pill me-2">@item.Quantity</span>
+                                <span class="text-truncate" style="max-width: 200px;">@item.Product.ProductName</span>
+                            </div>
+                            <span class="fw-bold">@((item.Product.Price * item.Quantity).ToString("#,##0")) đ</span>
+                        </div>
+                    }
+                </div>
+
+                <hr>
+
+                <form method="get" asp-action="Checkout" class="mb-3">
+                    <label class="form-label fw-bold">Mã giảm giá</label>
+                    <div class="input-group">
+                        <input type="text" name="voucherCode" class="form-control" placeholder="Nhập mã...">
+                        <button class="btn btn-dark" type="submit">Áp dụng</button>
+                    </div>
+                    @if (ViewBag.VoucherMessage != null)
+                    {
+                        <div class="text-success small mt-1"><i class="bi bi-check-circle"></i> @ViewBag.VoucherMessage</div>
+                    }
+                    @if (ViewBag.VoucherError != null)
+                    {
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle"></i> @ViewBag.VoucherError</div>
+                    }
+                </form>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <span class="text-muted">Tạm tính:</span>
+                    <span>@ViewBag.Total.ToString("#,##0") đ</span>
+                </div>
+                <div class="d-flex justify-content-between text-danger mt-1">
+                    <span>Giảm giá:</span>
+                    <span>-@ViewBag.Discount.ToString("#,##0") đ</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fs-4 fw-bold mt-2">
+                    <span>Tổng cộng:</span>
+                    <span class="text-danger">@ViewBag.FinalTotal.ToString("#,##0") đ</span>
+                </div>
+
+                <div class="mt-3">
+                    <small class="text-muted fw-bold"><i class="bi bi-gift"></i> Voucher dành cho bạn:</small>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        @if (ViewBag.SuggestVouchers != null)
+                        {
+                            @foreach (var v in ViewBag.SuggestVouchers)
+                            {
+                                <div class="card border-primary bg-light p-2 shadow-sm" style="cursor: pointer; border-style: dashed !important;"
+                                     onclick="applyVoucher('@v.Code')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-2">
+                                            <span class="badge bg-primary text-white">@v.Code</span>
+                                        </div>
+                                        <div style="font-size: 0.85rem;">
+                                            <strong class="d-block text-primary">Giảm @v.DiscountPercent%</strong>
+                                            <span class="text-muted">Đơn từ @v.MinOrderValue?.ToString("#,##0") đ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <script>
+                    function applyVoucher(code) {
+                        document.querySelector('input[name="voucherCode"]').value = code;
+                        document.querySelector('form[method="get"]').submit();
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+</div>

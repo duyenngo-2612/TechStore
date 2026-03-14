@@ -1,0 +1,135 @@
+﻿@model IEnumerable<TechStore.Models.Product>
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+
+@{
+    ViewData["Title"] = "Cửa hàng";
+}
+
+<style>
+    .product-card {
+        border: 1px solid #E4E7ED;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .product-card:hover {
+            border-color: #D10024;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+    .product-category {
+        font-size: 12px;
+        color: #8D99AE;
+        text-transform: uppercase;
+    }
+
+    .product-name {
+        font-size: 14px;
+        font-weight: 700;
+        height: 40px;
+        overflow: hidden;
+    }
+
+    .product-price {
+        color: #D10024;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .add-to-cart-btn {
+        background-color: #D10024;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 12px;
+        transition: 0.3s;
+    }
+
+        .add-to-cart-btn:hover {
+            background-color: #15161D;
+            color: #fff;
+        }
+
+    .banner-electro {
+        background: linear-gradient(135deg, #15161D 0%, #2b2d42 100%);
+        border-radius: 15px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 30px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="banner-electro text-center">
+        <h1 class="fw-bold">TECHSTORE - SIÊU THỊ CÔNG NGHỆ</h1>
+        <p class="lead">Giảm giá đến 50% cho các dòng Laptop Gaming mới nhất</p>
+        <button class="btn btn-danger rounded-pill px-4 fw-bold">MUA NGAY</button>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 product-card p-3">
+                    <div class="text-center mb-3">
+                        @{
+                            string imagePath = string.IsNullOrEmpty(item.ImageUrl) ? "/images/default.jpg" : item.ImageUrl;
+                        }
+                        <img src="@imagePath" class="img-fluid" style="height: 180px; object-fit: contain;">
+                    </div>
+                    <div class="card-body p-0">
+                        <p class="product-category mb-1">Thiết bị điện tử</p>
+                        <h5 class="product-name">
+                            <a href="#" class="text-decoration-none text-dark">@item.ProductName</a>
+                        </h5>
+                        <p class="product-price">@item.Price.ToString("#,##0") ₫</p>
+                    </div>
+                    <div class="mt-2">
+                        @* Form đã được chuyển sang AJAX *@
+                        <form class="ajax-add-to-cart">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="w-100 add-to-cart-btn">
+                                <i class="bi bi-cart-plus-fill me-2"></i> THÊM VÀO GIỎ
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.ajax-add-to-cart').submit(function (e) {
+                e.preventDefault(); // Ngăn trang web load lại
+
+                var form = $(this);
+                $.ajax({
+                    url: '@Url.Action("AddToCart", "Cart")',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            // Cập nhật con số trên Badge ngay lập tức
+                            $('#cart-count-badge').text(response.newCount);
+
+                            // Hiệu ứng nhẹ để người dùng biết đã thêm thành công
+                            alert("Đã thêm sản phẩm vào giỏ hàng!");
+                        } else {
+                            window.location.href = '@Url.Action("Login", "Account")';
+                        }
+                    },
+                    error: function () {
+                        alert("Có lỗi xảy ra, vui lòng thử lại!");
+                    }
+                });
+            });
+        });
+    </script>
+}

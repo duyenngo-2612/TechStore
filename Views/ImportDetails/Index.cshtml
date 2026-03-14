@@ -1,0 +1,27 @@
+﻿@model IEnumerable<TechStore.Models.ImportDetail>
+
+<h1>Chi tiết phiếu nhập #@ViewBag.ReceiptId</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng nhập</th>
+            <th>Giá nhập</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Product.ProductName</td>
+                <td>@item.Quantity</td>
+                <td>@item.ImportPrice.ToString("N0") đ</td>
+                <td>@((item.Quantity * item.ImportPrice).ToString("N0")) đ</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="/ImportReceipts" class="btn btn-secondary">Quay lại danh sách phiếu nhập</a>

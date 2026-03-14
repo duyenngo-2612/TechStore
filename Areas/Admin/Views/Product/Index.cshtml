@@ -1,0 +1,78 @@
+﻿@model IEnumerable<TechStore.Models.Product>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-1">
+    <div>
+        <h3 class="fw-bold m-0">Quản lý sản phẩm</h3>
+        <p class="text-muted small">Thêm, sửa, xóa sản phẩm</p>
+    </div>
+    <a asp-action="Create" class="btn btn-dark fw-bold px-3 shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Thêm sản phẩm
+    </a>
+</div>
+
+<div class="card card-stat mb-4 p-2">
+    <div class="input-group border-0">
+        <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
+        <input type="text" class="form-control border-0" placeholder="Tìm kiếm sản phẩm theo tên hoặc danh mục...">
+    </div>
+</div>
+
+<div class="card card-stat shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-muted small text-uppercase">
+                    <tr>
+                        <th class="ps-4" style="width: 80px;">Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Giá</th>
+                        <th>Giá gốc</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Đánh giá</th>
+                        <th class="pe-4 text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <img src="@item.ImageUrl" class="rounded border bg-white" style="width: 45px; height: 45px; object-fit: cover;" alt="product">
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark" style="font-size: 14px;">@item.ProductName</div>
+                            </td>
+                            <td class="small text-muted">@item.Category?.CategoryName</td>
+                            <td class="fw-bold text-dark">@string.Format("{0:#,##0}đ", item.Price)</td>
+                            <td class="text-muted small text-decoration-line-through">@string.Format("{0:#,##0}đ", item.Price * 1.2m)</td>
+                            <td>
+                                @if (item.StockQuantity > 0)
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Còn hàng</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">Hết hàng</span>
+                                }
+                            </td>
+                            <td class="text-center small">
+                                5 <i class="bi bi-star-fill text-warning" style="font-size: 10px;"></i>
+                            </td>
+                            <td class="pe-4 text-end">
+                                <a asp-action="Edit" asp-route-id="@item.ProductId" class="btn btn-link text-dark p-1 mx-1"><i class="bi bi-pencil"></i></a>
+                                <form asp-action="Delete" asp-route-id="@item.ProductId" method="post" class="d-inline" onsubmit="return confirm('Xóa sản phẩm này?')">
+                                    <button type="submit" class="btn btn-link text-danger p-1 mx-1"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
