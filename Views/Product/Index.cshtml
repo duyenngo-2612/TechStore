@@ -76,12 +76,14 @@
                 <div class="card h-100 product-card p-3">
                     <div class="text-center mb-3">
                         @{
-                            string imagePath = string.IsNullOrEmpty(item.ImageUrl) ? "/images/default.jpg" : "/images/Products/" + item.ImageUrl;
+                            string imagePath = string.IsNullOrEmpty(item.ImageUrl) ? "/images/default.jpg" : item.ImageUrl;
                         }
                         <img src="@imagePath" 
                              class="img-fluid" 
                              style="height: 180px; object-fit: contain;" 
                              onerror="this.onerror=null;this.src='/images/default.jpg';" />
+
+                      
                     </div>
                     <div class="card-body p-0">
                         <p class="product-category mb-1">Thiết bị điện tử</p>
