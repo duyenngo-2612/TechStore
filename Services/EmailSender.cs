@@ -7,7 +7,7 @@ namespace TechStore.Services
     public class EmailSender : IEmailService
     {
         private readonly string _fromEmail = "duyenngo.31241027639@st.ueh.edu.vn"; // Thay email thật của bạn
-        private readonly string _emailPassword = "xxxxxxxxxxxxxxxx"; // thay 16 kí tự thật vào đây 
+        private readonly string _emailPassword = "nqzueynnuqamtzec"; // thay 16 kí tự thật vào đây 
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
