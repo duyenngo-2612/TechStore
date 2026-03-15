@@ -1,87 +1,108 @@
-@model TechStore.Models.Product
+﻿@model TechStore.Models.Product
 
 @{
-    Layout = null;
+    ViewData["Title"] = Model.ProductName;
 }
 
-<!DOCTYPE html>
+<div class="container mt-5">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary mb-4">
+        <i class="bi bi-arrow-left"></i> Quay lại cửa hàng
+    </a>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
-</head>
-<body>
+    <div class="row">
+        <div class="col-md-5">
+            @{
+                string imagePath = string.IsNullOrEmpty(Model.ImageUrl) ? "/images/default.jpg" : Model.ImageUrl;
+            }
+            <img src="@imagePath" class="img-fluid border rounded p-3" alt="@Model.ProductName" style="width: 100%; object-fit: contain; max-height: 400px;" onerror="this.onerror=null;this.src='/images/default.jpg';" />
+        </div>
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Specifications)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Specifications)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StockQuantity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StockQuantity)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand.BrandId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.CategoryId)
-        </dd>
-    </dl>
+        <div class="col-md-7">
+            <h2 class="fw-bold">@Model.ProductName</h2>
+
+            <p class="text-muted">
+                Danh mục: @(Model.Category?.CategoryName ?? "Đang cập nhật") |
+                Hãng: @(Model.Brand?.BrandName ?? "Đang cập nhật")
+            </p>
+
+            <h3 class="text-danger fw-bold my-3">@Model.Price.ToString("#,##0") ₫</h3>
+
+            <p>
+                <strong>Tình trạng:</strong>
+                @if (Model.StockQuantity > 0)
+                {
+                    <span class="text-success">Còn hàng (@Model.StockQuantity)</span>
+                }
+                else
+                {
+                    <span class="text-danger">Hết hàng</span>
+                }
+            </p>
+
+            <hr />
+
+            @if (!string.IsNullOrEmpty(Model.Specifications))
+            {
+                <div class="mb-4">
+                    <h5 class="fw-bold">Thông số kỹ thuật:</h5>
+                    <div class="p-3 bg-light rounded">
+                        @Html.Raw(Model.Specifications)
+                    </div>
+                </div>
+            }
+
+            <form class="ajax-add-to-cart mt-4" style="max-width: 300px;">
+                <input type="hidden" name="productId" value="@Model.ProductId" />
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Số lượng</span>
+                    <input type="number" name="quantity" class="form-control" value="1" min="1" max="@(Model.StockQuantity ?? 1)" />
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100 py-2 fw-bold rounded-pill" @(Model.StockQuantity > 0 ? "" : "disabled")>
+                    <i class="bi bi-cart-plus-fill me-2"></i> THÊM VÀO GIỎ
+                </button>
+            </form>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <div class="row mt-5 mb-5">
+            <div class="col-12">
+                <h4 class="fw-bold border-bottom pb-2">Mô tả sản phẩm</h4>
+                <div class="pt-3">
+                    @Html.Raw(Model.Description)
+                </div>
+            </div>
+        </div>
+    }
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ProductId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
-</body>
-</html>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.ajax-add-to-cart').submit(function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                $.ajax({
+                    url: '@Url.Action("AddToCart", "Cart")',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            $('#cart-count-badge').text(response.newCount);
+                            alert("Đã thêm sản phẩm vào giỏ hàng!");
+                        } else {
+                            window.location.href = '@Url.Action("Login", "Account")';
+                        }
+                    },
+                    error: function () {
+                        alert("Có lỗi xảy ra, vui lòng thử lại!");
+                    }
+                });
+            });
+        });
+    </script>
+}

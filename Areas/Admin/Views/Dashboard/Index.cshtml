@@ -71,13 +71,11 @@
         <div class="card card-stat h-100 p-2 border-0 shadow-sm">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h6 class="fw-bold mb-0">Đơn hàng gần đây</h6>
-
-                        <a href="/Order/AdminIndex" class="text-danger small text-decoration-none">
-                            Xem tất cả <i class="bi bi-arrow-right"></i>
-                        </a>
-                    </div>
+                    <h6 class="fw-bold mb-0">Đơn hàng gần đây</h6>
+                    <a href="/Order/AdminIndex" class="text-danger small text-decoration-none">
+                        Xem tất cả <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
 
                 @{
                     var recentOrders = ViewBag.RecentOrders as List<TechStore.Models.Order>;
@@ -111,19 +109,15 @@
                                                     <span class="badge bg-warning text-dark">Chờ xác nhận</span>
                                                     ; break;
                                                 case 1:
-
                                                     <span class="badge bg-info text-dark">Đã xác nhận</span>
                                                     ; break;
                                                 case 2:
-
                                                     <span class="badge bg-primary">Đang giao</span>
                                                     ; break;
                                                 case 3:
-
                                                     <span class="badge bg-success">Hoàn thành</span>
                                                     ; break;
                                                 case 4:
-
                                                     <span class="badge bg-danger">Đã hủy</span>
                                                     ; break;
                                             }
