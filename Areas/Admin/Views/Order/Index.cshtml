@@ -1,0 +1,88 @@
+﻿@model IEnumerable<TechStore.Models.Order>
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Danh sách Đơn hàng</h2>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã ĐH</th>
+                    <th>Ngày đặt</th>
+                    <th>Khách hàng</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái hiện tại</th>
+                    <th>Cập nhật trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-primary">#@item.OrderId</td>
+                        <td>@(item.OrderDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+                        <td>
+                            <div class="fw-bold">@(item.User?.FullName ?? "Khách vãng lai")</div>
+                            <small class="text-muted">@(item.User?.PhoneNumber ?? item.ShippingAddress)</small>
+                        </td>
+                        <td class="text-danger fw-bold">@item.TotalAmount.ToString("#,##0") ₫</td>
+                        <td>
+                            @switch (item.Status)
+                            {
+                                case 0:
+                                    <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                    break;
+                                case 1:
+
+                                    <span class="badge bg-info text-dark">Đã xác nhận</span>
+                                    break;
+                                case 2:
+
+                                    <span class="badge bg-primary">Đang giao hàng</span>
+                                    break;
+                                case 3:
+
+                                    <span class="badge bg-success">Thành công</span>
+                                    break;
+                                case 4:
+
+                                    <span class="badge bg-danger">Đã hủy</span>
+                                    break;
+                                default:
+
+                                    <span class="badge bg-secondary">Không xác định</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            <form asp-controller="Order" asp-action="UpdateStatus" method="post" class="d-flex gap-2">
+                                <input type="hidden" name="orderId" value="@item.OrderId" />
+                                <select name="newStatus" class="form-select form-select-sm" style="width: 150px;">
+                                    <option value="0" selected="@(item.Status == 0)">Chờ xác nhận</option>
+                                    <option value="1" selected="@(item.Status == 1)">Đã xác nhận</option>
+                                    <option value="2" selected="@(item.Status == 2)">Đang giao hàng</option>
+                                    <option value="3" selected="@(item.Status == 3)">Thành công</option>
+                                    <option value="4" selected="@(item.Status == 4)">Đã hủy</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Lưu</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

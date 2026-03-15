@@ -42,16 +42,20 @@
                             }
                         }
 
-                        <img src="@imagePath"
-                             class="img-fluid"
-                             style="height: 180px; width: 100%; object-fit: contain;"
-                             onerror="this.src='/images/default.jpg'">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">
+                            <img src="@imagePath"
+                                 class="img-fluid"
+                                 style="height: 180px; width: 100%; object-fit: contain;"
+                                 onerror="this.src='/images/default.jpg'">
+                        </a>
                     </div>
 
                     <div class="card-body p-0">
                         <p class="product-category mb-1 text-muted small">Chính hãng</p>
                         <h6 class="product-name fw-bold mb-2" style="height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
-                            @item.ProductName
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-decoration-none text-dark">
+                                @item.ProductName
+                            </a>
                         </h6>
                         <p class="text-danger fw-bold fs-5 mb-0">@item.Price.ToString("#,##0") ₫</p>
                     </div>

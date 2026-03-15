@@ -87,7 +87,12 @@
 
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Order" ? "active" : "")"
                    asp-area="Admin" asp-controller="Order" asp-action="Index">
-                    <i class="bi bi-bag-check me-2"></i> Đơn hàng
+                    <i class="bi bi-bag-check me-2"></i> Quản lý Đơn hàng
+                </a>
+
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Review" ? "active" : "")"
+                   asp-area="Admin" asp-controller="Review" asp-action="Index">
+                    <i class="bi bi-star me-2"></i> Đánh giá
                 </a>
             </nav>
 

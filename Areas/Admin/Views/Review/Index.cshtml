@@ -1,0 +1,65 @@
+﻿@model IEnumerable<TechStore.Models.Review>
+@{
+    ViewData["Title"] = "Quản lý đánh giá";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Đánh giá từ khách hàng</h2>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Ngày</th>
+                    <th>Khách hàng</th>
+                    <th>Sản phẩm</th>
+                    <th>Số sao</th>
+                    <th style="width: 30%;">Nội dung</th>
+                    <th>Hiển thị</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@(item.ReviewDate?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td>
+                        <td class="fw-bold">@(item.User?.FullName ?? "N/A")</td>
+                        <td>
+                            <a href="/Product/Details/@item.ProductId" target="_blank" class="text-decoration-none">
+                                @(item.Product?.ProductName ?? "N/A")
+                            </a>
+                        </td>
+                        <td class="text-warning">
+                            @for (int i = 0; i < item.Rating; i++)
+                            {
+                                <i class="bi bi-star-fill"></i>
+                            }
+                        </td>
+                        <td>@item.Comment</td>
+                        <td>
+                            @if (item.IsVisible ?? true)
+                            {
+                                <span class="badge bg-success">Đang hiện</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Đã ẩn</span>
+                            }
+                        </td>
+                        <td>
+                            <form asp-controller="Review" asp-action="ToggleVisibility" method="post">
+                                <input type="hidden" name="reviewId" value="@item.ReviewId" />
+                                <button type="submit" class="btn btn-sm @((item.IsVisible ?? true) ? "btn-outline-danger" : "btn-outline-success")">
+                                    @((item.IsVisible ?? true) ? "Ẩn" : "Hiện")
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
