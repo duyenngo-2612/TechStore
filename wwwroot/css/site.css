@@ -2,9 +2,9 @@
 :root {
     --electro-red: #D10024;
     --electro-dark: #15161D;
-    --electro-gradient: linear-gradient(135deg, #2b58ff 0%, #ff22e6 100%);
+    --electro-gradient: linear-gradient(135deg, #bd334a 0%, #e9e6e6 100%);
 }
-
+/*D10024
 /* Banner Gradient chuẩn hình mẫu */
 .banner-electro-gradient {
     background: var(--electro-gradient);
