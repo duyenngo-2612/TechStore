@@ -60,7 +60,16 @@
                     <span>Tạm tính:</span>
                     <span class="fw-bold fs-5 text-danger">@Model.Sum(x => x.Quantity * x.Product.Price).ToString("#,##0") ₫</span>
                 </div>
-                <button class="btn btn-danger w-100 py-3 fw-bold rounded-pill">TIẾN HÀNH THANH TOÁN</button>
+
+                @if (Model.Any())
+                {
+                    <a asp-controller="Order" asp-action="Checkout" class="btn btn-danger w-100 py-3 fw-bold rounded-pill text-decoration-none text-white text-center">TIẾN HÀNH THANH TOÁN</a>
+                }
+                else
+                {
+                    <button class="btn btn-secondary w-100 py-3 fw-bold rounded-pill" disabled>GIỎ HÀNG TRỐNG</button>
+                }
+
                 <a href="/" class="btn btn-link w-100 mt-2 text-decoration-none text-muted">Tiếp tục mua sắm</a>
             </div>
         </div>
