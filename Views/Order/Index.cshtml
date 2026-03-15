@@ -71,7 +71,11 @@
                     @foreach (var item in order.OrderDetails)
                     {
                         <div class="d-flex mb-3 align-items-center border-bottom pb-3">
-                            <img src="@item.Product.ImageUrl" alt="@item.Product.ProductName" class="rounded" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #eee;">                            <div class="ms-3 flex-grow-1">
+                            <img src="/images/@item.Product.ImageUrl" 
+                            alt="@item.Product.ProductName" 
+                            class="rounded" 
+                            style="width: 80px; height: 80px; object-fit: contain; border: 1px solid #eee;"
+                            onerror="this.src='/images/default.jpg';">
                                 <h6 class="mb-1 fw-bold">@item.Product.ProductName</h6>
                                 <p class="mb-0 text-muted small">x @item.Quantity</p>
                             </div>

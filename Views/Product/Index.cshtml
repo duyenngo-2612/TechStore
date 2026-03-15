@@ -53,22 +53,40 @@
             color: #fff;
         }
 
-    .banner-electro {
-        background: linear-gradient(135deg, #15161D 0%, #2b2d42 100%);
+        .banner-electro {
+        position: relative;
+        background: linear-gradient(135deg, #101114 0%, #2b2d42 100%);
         border-radius: 15px;
-        padding: 40px;
+        padding: 20px 40px; 
         color: white;
         margin-bottom: 30px;
-    }
+        overflow: hidden; 
+        }
+        .banner-side-img {
+        max-height: 500px; 
+        object-fit: contain; 
+        filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); 
+        transition: 0.5s;
+        }
 </style>
 
-<div class="container mt-4">
-    <div class="banner-electro text-center">
-        <h1 class="fw-bold">TECHSTORE - SIÊU THỊ CÔNG NGHỆ</h1>
-        <p class="lead">Giảm giá đến 15% cho các dòng Laptop Gaming mới nhất</p>
-        <button class="btn btn-danger rounded-pill px-4 fw-bold">MUA NGAY</button>
-    </div>
+<div class="banner-electro position-relative overflow-hidden">
+    <div class="row align-items-center">
+        <div class="col-md-3 d-none d-md-block text-start">
+            <img src="/images/banner-left.jpg" class="img-fluid banner-side-img" alt="Banner Left">
+        </div>
 
+        <div class="col-md-6 text-center z-index-1">
+            <h1 class="fw-bold display-5 text-white">TECHSTORE - SIÊU THỊ CÔNG NGHỆ</h1>
+            <p class="lead text-white-50">Giảm giá đến 15% cho các dòng Laptop Gaming mới nhất</p>
+            <button class="btn btn-danger rounded-pill px-5 py-2 fw-bold mt-2 shadow">MUA NGAY</button>
+        </div>
+
+        <div class="col-md-3 d-none d-md-block text-end">
+            <img src="/images/banner-right.jpg" class="img-fluid banner-side-img" alt="Banner Right">
+        </div>
+    </div>
+</div>
     <div class="row">
         @foreach (var item in Model)
         {

@@ -46,16 +46,23 @@
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="ImageUrl" class="control-label fw-bold">Đường dẫn hình ảnh (URL)</label>
-                    <input asp-for="ImageUrl" class="form-control" />
-                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                    {
+                     <label asp-for="ImageUrl" class="control-label fw-bold">Tên file hình ảnh</label>
+                        <input asp-for="ImageUrl" class="form-control" placeholder="Ví dụ: iphone-15.jpg" />
+    
+                     @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                     {
                         <div class="mt-2">
-                            <p class="mb-1 text-muted">Ảnh hiện tại:</p>
-                            <img src="@Model.ImageUrl" alt="Hình ảnh sản phẩm" style="max-width: 150px; border: 1px solid #ccc; border-radius: 5px;" />
-                        </div>
-                    }
-                </div>
+                        <p class="mb-1 text-muted small">Ảnh hiện tại:</p>
+                        @{
+                        string previewPath = "/images/" + Model.ImageUrl;
+                         }
+                         <img src="@previewPath" 
+                         alt="Hình ảnh sản phẩm" 
+                        style="max-width: 150px; border: 1px solid #ddd; border-radius: 8px; padding: 5px;" 
+                        onerror="this.src='/images/default.jpg';" />
+                 </div>
+                        }
+            </div>
 
                 <div class="mb-3">
                     <label asp-for="Description" class="control-label fw-bold">Mô tả sản phẩm</label>

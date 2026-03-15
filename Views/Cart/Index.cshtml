@@ -25,7 +25,7 @@
                                 <tr id="row-@item.ProductId">
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <img src="@(string.IsNullOrEmpty(item.Product.ImageUrl) ? "/images/default.jpg" : item.Product.ImageUrl)"
+                                            <img src="@(string.IsNullOrEmpty(item.Product.ImageUrl) ? "/images/default.jpg" : "/images/" + item.Product.ImageUrl)"
                                                  style="width: 60px; height: 60px; object-fit: contain;" class="me-3">
                                             <span class="fw-bold text-dark">@item.Product.ProductName</span>
                                         </div>

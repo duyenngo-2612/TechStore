@@ -42,8 +42,18 @@
                     {
                         <tr>
                             <td class="ps-4">
-                                <img src="@item.ImageUrl" class="rounded border bg-white" style="width: 45px; height: 45px; object-fit: cover;" alt="product">
-                            </td>
+                            @{
+       
+                            string fullPath = string.IsNullOrEmpty(item.ImageUrl) 
+                          ? "/images/default.jpg" 
+                          : "/images/" + item.ImageUrl;
+                            }
+                         <img src="@fullPath" 
+                             class="rounded border bg-white" 
+                            style="width: 45px; height: 45px; object-fit: contain;" 
+                            lt="product"
+                             onerror="this.onerror=null;this.src='/images/default.jpg';">
+<                           
                             <td>
                                 <div class="fw-bold text-dark" style="font-size: 14px;">@item.ProductName</div>
                             </td>

@@ -2,15 +2,34 @@
 :root {
     --electro-red: #D10024;
     --electro-dark: #15161D;
-    --electro-gradient: linear-gradient(135deg, #bd334a 0%, #e9e6e6 100%);
+    --electro-gradient: linear-gradient(135deg, #bd334a 0%, #ffffff 100%);
 }
 /*D10024
 /* Banner Gradient chuẩn hình mẫu */
 .banner-electro-gradient {
     background: var(--electro-gradient);
     border-radius: 20px;
-    padding: 60px 40px;
+    padding-bottom: 0 !important;
     margin-top: 20px;
+}
+.banner-side-img {
+    max-height: 420px;
+    width: auto;
+    margin-bottom: 1px;
+    z-index: 5; /* Nằm trên ảnh phụ */
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.3));
+}
+
+/* Ảnh phụ (Sản phẩm kế bên) */
+.banner-side-img-secondary {
+    max-height: 250px; 
+    width: auto;
+    margin-bottom: -20px;
+    margin-left: -50px; 
+    z-index: 4;
+    transition: all 0.6s ease-in-out;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
 }
 
 /* Thanh lọc Category */

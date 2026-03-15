@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col-md-5">
             @{
-                string imagePath = string.IsNullOrEmpty(Model.ImageUrl) ? "/images/default.jpg" : Model.ImageUrl;
+                string imagePath = string.IsNullOrEmpty(Model.ImageUrl) ? "/images/default.jpg" : "/images/" + Model.ImageUrl;
             }
             <img src="@imagePath" class="img-fluid border rounded p-3" alt="@Model.ProductName" style="width: 100%; object-fit: contain; max-height: 400px;" onerror="this.onerror=null;this.src='/images/default.jpg';" />
         </div>

@@ -72,7 +72,9 @@
 <body>
     <div class="d-flex">
         <div class="sidebar shadow-sm">
-            <div class="p-4 text-primary fw-bold fs-4">TECHSTORE ADMIN</div>
+            <div class="p-4 fs-4 fw-bold logo-admin">
+            <span class="text-black px-2  py-1 rounded">TECH</span><span class="text-danger">STORE</span>
+            </div>
 
             <nav class="nav flex-column">
                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Dashboard" ? "active" : "")"
