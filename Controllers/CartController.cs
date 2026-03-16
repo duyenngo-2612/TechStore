@@ -260,6 +260,15 @@ namespace TechStore.Controllers
 
             await GetCartCount();
 
+            // =========================================================
+            // ĐÃ THÊM: XỬ LÝ ĐIỀU HƯỚNG THEO PHƯƠNG THỨC THANH TOÁN
+            // =========================================================
+            if (paymentMethod == "EWallet")
+            {
+                // Chuyển hướng sang PaymentController để tạo mã thanh toán
+                return RedirectToAction("CreatePaymentUrl", "Payment", new { orderId = order.OrderId });
+            }
+
             TempData["SuccessMessage"] = "Đặt hàng thành công! Mã đơn hàng: #" + order.OrderId;
             return RedirectToAction("OrderSuccess");
         }

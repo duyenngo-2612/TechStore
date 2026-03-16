@@ -8,7 +8,8 @@
         <div class="col-md-7">
             <div class="card shadow-sm border-0 p-4 rounded-3">
                 <h4 class="fw-bold mb-4 text-primary"><i class="bi bi-truck"></i> THÔNG TIN GIAO HÀNG</h4>
-                <form asp-action="PlaceOrder" asp-controller="Order" method="post">
+
+                <form asp-action="PlaceOrder" asp-controller="Cart" method="post">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Họ và tên người nhận</label>
                         <input type="text" class="form-control" value="@Context.Session.GetString("UserName")" readonly>
@@ -16,7 +17,8 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Địa chỉ nhận hàng cụ thể</label>
-                        <textarea name="address" class="form-control" rows="3" placeholder="Ví dụ: 123 Lê Lợi, Quận 1, TP.HCM" required></textarea>
+
+                        <textarea name="shippingAddress" class="form-control" rows="3" placeholder="Ví dụ: 123 Lê Lợi, Quận 1, TP.HCM" required></textarea>
                     </div>
 
                     <div class="mb-3">
@@ -28,9 +30,10 @@
                             </label>
                         </div>
                         <div class="form-check border p-3 rounded-3">
-                            <input class="form-check-input ms-1" type="radio" name="paymentMethod" value="Banking" id="banking">
+
+                            <input class="form-check-input ms-1" type="radio" name="paymentMethod" value="EWallet" id="banking">
                             <label class="form-check-label ms-4" for="banking">
-                                <i class="bi bi-credit-card"></i> Chuyển khoản ngân hàng
+                                <i class="fas fa-wallet"></i> Thanh toán qua ví điện tử (MoMo, VNPay...)
                             </label>
                         </div>
                     </div>
