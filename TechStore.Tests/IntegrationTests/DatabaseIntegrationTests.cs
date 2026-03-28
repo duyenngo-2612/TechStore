@@ -27,6 +27,7 @@ namespace TechStore.Tests
             // Arrange
             var order = new Order
             {
+
                 // Nếu model của bạn có các field khác thì thêm vào đây
                 OrderDate = System.DateTime.Now,
                 OrderDetails = new System.Collections.Generic.List<OrderDetail>
@@ -37,7 +38,8 @@ namespace TechStore.Tests
                         Quantity = 2,
                         UnitPrice = 100000
                     }
-                }
+                },
+                ShippingAddress = "123 Đường ABC, TP.HCM"
             };
 
             // Act
