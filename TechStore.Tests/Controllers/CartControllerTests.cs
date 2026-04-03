@@ -34,14 +34,24 @@ namespace TechStore.Tests.Controllers
         [Fact]
         public async Task TC03_PlaceOrder_WhenNoSession_ShouldRedirectToLogin()
         {
-            // Arrange
+            // Arrange: Cài đặt Session giả trả về false (không có UserId)
             byte[]? outValue = null;
             _mockSession.Setup(s => s.TryGetValue("UserId", out outValue)).Returns(false);
 
-            // Act: Thêm await ở phía trước để đợi hàm chạy xong
-            var result = await _controller.PlaceOrder("COD", "Giao nhanh", "TP.HCM") as RedirectToActionResult;
+            // BƯỚC SỬA LỖI: Tạo HttpContext giả và nhét Session giả vào
+            var httpContext = new Microsoft.AspNetCore.Http.DefaultHttpContext();
+            httpContext.Session = _mockSession.Object; // Gắn mock session của bạn vào đây
 
-            // Assert
+            // Ép Controller phải sử dụng HttpContext giả này
+            _controller.ControllerContext = new Microsoft.AspNetCore.Mvc.ControllerContext
+            {
+                HttpContext = httpContext
+            };
+
+            // Act: Gửi request chốt đơn
+            var result = await _controller.PlaceOrder("COD", "Giao nhanh", "TP.HCM") as Microsoft.AspNetCore.Mvc.RedirectToActionResult;
+
+            // Assert: Kỳ vọng bị đá về trang Login
             Assert.NotNull(result);
             Assert.Equal("Login", result.ActionName);
             Assert.Equal("Account", result.ControllerName);

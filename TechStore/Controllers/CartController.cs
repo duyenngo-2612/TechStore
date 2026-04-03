@@ -223,9 +223,16 @@ namespace TechStore.Controllers
         public async Task<IActionResult> PlaceOrder(string shippingAddress, string paymentMethod, string note)
         {
             var userIdStr = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userIdStr)) return RedirectToAction("Login", "Account");
 
+            // HỖ TRỢ TEST: Nếu không có Session nhưng hệ thống đang có Auth ảo thì lấy ID từ Auth
+            if (string.IsNullOrEmpty(userIdStr) && User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            }
+
+            if (string.IsNullOrEmpty(userIdStr)) return RedirectToAction("Login", "Account");
             int userId = int.Parse(userIdStr);
+
             var cartItems = await _context.Carts.Include(c => c.Product).Where(c => c.UserId == userId).ToListAsync();
 
             if (!cartItems.Any()) return RedirectToAction("Index");
