@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TechStore.Models;
 using TechStore.Services;
+using TechStore.Services.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,10 @@ builder.Services.AddAuthentication(options =>
     options.LoginPath = "/Account/Login"; // Chuyển hướng khi chưa đăng nhập
     options.AccessDeniedPath = "/Account/AccessDenied"; // Chuyển hướng khi không đủ quyền
 });
+builder.Services.AddHttpContextAccessor(); // Bắt buộc để dùng Session trong Service
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 // Khởi tạo ứng dụng sau khi đã đăng ký xong tất cả Services
 var app = builder.Build();

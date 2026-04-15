@@ -1,122 +1,57 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using TechStore.Services;
 using TechStore.Models;
-using TechStore.Extensions; // Khai báo thư viện vừa tạo ở trên
+using Microsoft.EntityFrameworkCore; // Vẫn tạm giữ để phục vụ hàm PlaceOrder
 
 namespace TechStore.Controllers
 {
     public class CartController : Controller
     {
-        private readonly TechStoreContext _context;
-        public CartController(TechStoreContext context) { _context = context; }
+        private readonly ICartService _cartService;
+        private readonly TechStoreContext _context; // Tạm giữ lại cho hàm PlaceOrder (Sẽ rút nốt ở bước sau)
+
+        // Inject cả Service và DbContext
+        public CartController(ICartService cartService, TechStoreContext context)
+        {
+            _cartService = cartService;
+            _context = context;
+        }
 
         // =================================================================
-        // HÀM HỖ TRỢ: ĐẾM SỐ LƯỢNG VÀ GỘP GIỎ HÀNG
+        // HÀM HỖ TRỢ DÙNG CHUNG TRONG CONTROLLER
         // =================================================================
-
-        private async Task<int> GetCartCount()
+        private int? GetUserId()
         {
             var userIdStr = HttpContext.Session.GetString("UserId");
-            int count = 0;
 
-            if (!string.IsNullOrEmpty(userIdStr)) // Đã đăng nhập
+            // Hỗ trợ trường hợp test Auth ảo mà bạn đã viết trước đó
+            if (string.IsNullOrEmpty(userIdStr) && User.Identity != null && User.Identity.IsAuthenticated)
             {
-                int userId = int.Parse(userIdStr);
-                count = await _context.Carts.Where(c => c.UserId == userId).SumAsync(c => (int?)c.Quantity) ?? 0;
-            }
-            else // Chưa đăng nhập (khách vãng lai)
-            {
-                var sessionCart = HttpContext.Session.GetObjectFromJson<List<CartItemSession>>("GuestCart");
-                if (sessionCart != null) count = sessionCart.Sum(c => c.Quantity);
+                userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             }
 
-            HttpContext.Session.SetString("CartCount", count.ToString());
-            return count;
-        }
-
-        // Hàm này cực kỳ quan trọng: Gộp đồ khách vãng lai đã chọn vào Database sau khi họ đăng nhập
-        private async Task MergeSessionCartToDb(int userId)
-        {
-            var sessionCart = HttpContext.Session.GetObjectFromJson<List<CartItemSession>>("GuestCart");
-            if (sessionCart != null && sessionCart.Any())
-            {
-                foreach (var item in sessionCart)
-                {
-                    var dbItem = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId && c.ProductId == item.ProductId);
-                    if (dbItem != null)
-                    {
-                        dbItem.Quantity += item.Quantity; // Cộng dồn nếu đã có
-                    }
-                    else
-                    {
-                        _context.Carts.Add(new Cart { UserId = userId, ProductId = item.ProductId, Quantity = item.Quantity });
-                    }
-                }
-                await _context.SaveChangesAsync();
-                HttpContext.Session.Remove("GuestCart"); // Gộp xong thì xóa Session tạm đi
-            }
+            return string.IsNullOrEmpty(userIdStr) ? null : int.Parse(userIdStr);
         }
 
         // =================================================================
-        // CÁC CHỨC NĂNG GIỎ HÀNG (Cho phép cả khách và user)
+        // CÁC CHỨC NĂNG GIỎ HÀNG (Đã được làm mỏng tối đa)
         // =================================================================
 
         public async Task<IActionResult> Index()
         {
-            var userIdStr = HttpContext.Session.GetString("UserId");
-
-            if (!string.IsNullOrEmpty(userIdStr)) // NẾU ĐÃ ĐĂNG NHẬP
-            {
-                int userId = int.Parse(userIdStr);
-                await MergeSessionCartToDb(userId); // Gộp giỏ hàng nếu có
-                var dbCart = await _context.Carts.Include(c => c.Product).Where(c => c.UserId == userId).ToListAsync();
-                return View(dbCart);
-            }
-            else // NẾU CHƯA ĐĂNG NHẬP
-            {
-                var sessionCart = HttpContext.Session.GetObjectFromJson<List<CartItemSession>>("GuestCart") ?? new List<CartItemSession>();
-                var viewCart = new List<Cart>();
-
-                // Chuyển từ Session sang Model Cart để View hiển thị bình thường không bị lỗi
-                foreach (var item in sessionCart)
-                {
-                    var product = await _context.Products.FindAsync(item.ProductId);
-                    if (product != null)
-                    {
-                        viewCart.Add(new Cart { ProductId = item.ProductId, Quantity = item.Quantity, Product = product });
-                    }
-                }
-                return View(viewCart);
-            }
+            // Chỉ 1 dòng code: Gọi service lấy danh sách item (đã bao gồm tự động gộp Session nếu có)
+            var cartItems = await _cartService.GetCartItemsAsync(GetUserId());
+            return View(cartItems);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddToCart(int productId, int quantity = 1)
         {
             bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
-            var userIdStr = HttpContext.Session.GetString("UserId");
 
-            if (!string.IsNullOrEmpty(userIdStr)) // NẾU ĐÃ ĐĂNG NHẬP (Lưu DB)
-            {
-                int userId = int.Parse(userIdStr);
-                var item = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId && c.ProductId == productId);
-                if (item != null) item.Quantity += quantity;
-                else _context.Add(new Cart { UserId = userId, ProductId = productId, Quantity = quantity });
-
-                await _context.SaveChangesAsync();
-            }
-            else // NẾU CHƯA ĐĂNG NHẬP (Lưu Session)
-            {
-                var sessionCart = HttpContext.Session.GetObjectFromJson<List<CartItemSession>>("GuestCart") ?? new List<CartItemSession>();
-                var item = sessionCart.FirstOrDefault(c => c.ProductId == productId);
-
-                if (item != null) item.Quantity += quantity;
-                else sessionCart.Add(new CartItemSession { ProductId = productId, Quantity = quantity });
-
-                HttpContext.Session.SetObjectAsJson("GuestCart", sessionCart);
-            }
-
-            int newCount = await GetCartCount();
+            // Nhờ Service xử lý logic thêm vào DB hoặc Session
+            await _cartService.AddToCartAsync(productId, quantity, GetUserId());
+            int newCount = await _cartService.GetCartCountAsync(GetUserId());
 
             if (isAjax) return Json(new { success = true, newCount = newCount });
 
@@ -128,118 +63,57 @@ namespace TechStore.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateQuantity(int productId, int change)
         {
-            var userIdStr = HttpContext.Session.GetString("UserId");
-
-            if (!string.IsNullOrEmpty(userIdStr)) // Cập nhật DB
-            {
-                int userId = int.Parse(userIdStr);
-                var item = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId && c.ProductId == productId);
-                if (item != null)
-                {
-                    item.Quantity += change;
-                    if (item.Quantity <= 0) _context.Carts.Remove(item);
-                    await _context.SaveChangesAsync();
-                }
-            }
-            else // Cập nhật Session
-            {
-                var sessionCart = HttpContext.Session.GetObjectFromJson<List<CartItemSession>>("GuestCart");
-                if (sessionCart != null)
-                {
-                    var item = sessionCart.FirstOrDefault(c => c.ProductId == productId);
-                    if (item != null)
-                    {
-                        item.Quantity += change;
-                        if (item.Quantity <= 0) sessionCart.Remove(item);
-                        HttpContext.Session.SetObjectAsJson("GuestCart", sessionCart);
-                    }
-                }
-            }
-
-            return Json(new { success = true, newCount = await GetCartCount() });
+            await _cartService.UpdateQuantityAsync(productId, change, GetUserId());
+            int newCount = await _cartService.GetCartCountAsync(GetUserId());
+            return Json(new { success = true, newCount = newCount });
         }
 
         [HttpPost]
         public async Task<IActionResult> Remove(int productId)
         {
-            var userIdStr = HttpContext.Session.GetString("UserId");
-
-            if (!string.IsNullOrEmpty(userIdStr)) // Xóa DB
-            {
-                int userId = int.Parse(userIdStr);
-                var item = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId && c.ProductId == productId);
-                if (item != null)
-                {
-                    _context.Carts.Remove(item);
-                    await _context.SaveChangesAsync();
-                }
-            }
-            else // Xóa Session
-            {
-                var sessionCart = HttpContext.Session.GetObjectFromJson<List<CartItemSession>>("GuestCart");
-                if (sessionCart != null)
-                {
-                    var item = sessionCart.FirstOrDefault(c => c.ProductId == productId);
-                    if (item != null)
-                    {
-                        sessionCart.Remove(item);
-                        HttpContext.Session.SetObjectAsJson("GuestCart", sessionCart);
-                    }
-                }
-            }
-
-            return Json(new { success = true, newCount = await GetCartCount() });
+            await _cartService.RemoveFromCartAsync(productId, GetUserId());
+            int newCount = await _cartService.GetCartCountAsync(GetUserId());
+            return Json(new { success = true, newCount = newCount });
         }
 
         // =================================================================
-        // THANH TOÁN (Yêu cầu phải đăng nhập)
+        // THANH TOÁN
         // =================================================================
 
         [HttpGet]
         public async Task<IActionResult> Checkout()
         {
-            var userIdStr = HttpContext.Session.GetString("UserId");
-
-            // LUỒNG CHUẨN UX: Bấm thanh toán mà chưa đăng nhập thì đẩy ra trang Login
-            if (string.IsNullOrEmpty(userIdStr))
+            var userId = GetUserId();
+            if (userId == null)
             {
                 TempData["Message"] = "Vui lòng đăng nhập tài khoản để tiến hành đặt hàng.";
                 return RedirectToAction("Login", "Account");
             }
 
-            int userId = int.Parse(userIdStr);
-
-            // Gộp giỏ hàng (Trường hợp khách vãng lai đi nhặt đồ, bị ép login, login xong quay lại đây thì đồ vẫn còn)
-            await MergeSessionCartToDb(userId);
-
-            var cartItems = await _context.Carts.Include(c => c.Product).Where(c => c.UserId == userId).ToListAsync();
+            // Gọi service lấy giỏ hàng ra (nó đã tự động Merge session ở bên trong)
+            var cartItems = await _cartService.GetCartItemsAsync(userId);
             if (!cartItems.Any()) return RedirectToAction("Index");
 
-            ViewBag.User = await _context.Users.FindAsync(userId);
+            ViewBag.User = await _context.Users.FindAsync(userId.Value);
             return View(cartItems);
         }
 
         [HttpPost]
         public async Task<IActionResult> PlaceOrder(string shippingAddress, string paymentMethod, string note)
         {
-            var userIdStr = HttpContext.Session.GetString("UserId");
+            var userId = GetUserId();
+            if (userId == null) return RedirectToAction("Login", "Account");
 
-            // HỖ TRỢ TEST: Nếu không có Session nhưng hệ thống đang có Auth ảo thì lấy ID từ Auth
-            if (string.IsNullOrEmpty(userIdStr) && User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            }
-
-            if (string.IsNullOrEmpty(userIdStr)) return RedirectToAction("Login", "Account");
-            int userId = int.Parse(userIdStr);
-
-            var cartItems = await _context.Carts.Include(c => c.Product).Where(c => c.UserId == userId).ToListAsync();
-
+            var cartItems = await _context.Carts.Include(c => c.Product).Where(c => c.UserId == userId.Value).ToListAsync();
             if (!cartItems.Any()) return RedirectToAction("Index");
+
+            // ⚠️ CHÚ Ý: Toàn bộ khối code tạo đơn, lưu OrderDetails, và trừ tồn kho dưới đây 
+            // hiện tại mình vẫn giữ nguyên trong Controller để đảm bảo code của bạn chạy được ngay.
+            // Mục tiêu tiếp theo là cắt toàn bộ khối này mang sang `OrderService`.
 
             var order = new Order
             {
-                UserId = userId,
+                UserId = userId.Value,
                 OrderDate = DateTime.Now,
                 ShippingAddress = shippingAddress ?? "Chưa cung cấp",
                 PaymentMethod = paymentMethod ?? "COD",
@@ -265,14 +139,11 @@ namespace TechStore.Controllers
             _context.Carts.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
 
-            await GetCartCount();
+            // Cập nhật lại số lượng giỏ hàng trên Header sau khi mua xong
+            await _cartService.GetCartCountAsync(userId);
 
-            // =========================================================
-            // ĐÃ THÊM: XỬ LÝ ĐIỀU HƯỚNG THEO PHƯƠNG THỨC THANH TOÁN
-            // =========================================================
             if (paymentMethod == "EWallet")
             {
-                // Chuyển hướng sang PaymentController để tạo mã thanh toán
                 return RedirectToAction("CreatePaymentUrl", "Payment", new { orderId = order.OrderId });
             }
 

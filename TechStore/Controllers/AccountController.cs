@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TechStore.Models;
-using TechStore.Services;
 using BCrypt.Net;
+using TechStore.Services.Interface;
+using TechStore.ViewModel;
 
 namespace TechStore.Controllers
 {

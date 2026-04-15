@@ -1,4 +1,4 @@
-﻿namespace TechStore.Services
+﻿namespace TechStore.Services.Interface
 {
     
         public interface IEmailService

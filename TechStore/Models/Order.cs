@@ -8,7 +8,7 @@ public partial class Order
 {
     public int OrderId { get; set; }
 
-    // Thêm thẻ Range để bắt buộc UserId phải từ 1 trở lên (số 0 sẽ bị coi là không hợp lệ)
+    // Thêm thẻ Range để bắt buộc UserId phải từ 1 trở lên 
     [Range(1, int.MaxValue, ErrorMessage = "Tài khoản (UserId) không hợp lệ.")]
     public int UserId { get; set; }
 
@@ -16,7 +16,6 @@ public partial class Order
 
     public DateTime? OrderDate { get; set; }
 
-    // Thêm thẻ Required để không cho phép chuỗi rỗng ("") hoặc null
     [Required(AllowEmptyStrings = false, ErrorMessage = "Địa chỉ giao hàng không được để trống.")]
     public string ShippingAddress { get; set; } = null!;
 

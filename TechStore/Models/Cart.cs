@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TechStore.Models // <--- KIỂM TRA KỸ DÒNG NÀY
+namespace TechStore.Models 
 {
     [Table("Cart")]
     public class Cart

@@ -1,4 +1,4 @@
-﻿namespace TechStore.Models
+﻿namespace TechStore.ViewModel
 {
     public class RegisterViewModel
     {

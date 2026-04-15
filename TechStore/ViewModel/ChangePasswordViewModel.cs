@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TechStore.Models
+namespace TechStore.ViewModel
 {
     public class ChangePasswordViewModel
     {
