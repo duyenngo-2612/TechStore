@@ -22,7 +22,7 @@ namespace TechStore.Tests
         }
 
         [Fact]
-        public async Task TC06_Should_Save_Order_To_Database()
+        public async Task TC05_Should_Save_Order_To_Database()
         {
             // Arrange
             var order = new Order

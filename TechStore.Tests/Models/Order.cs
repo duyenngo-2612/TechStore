@@ -8,7 +8,7 @@ namespace TechStore.Tests
     public class OrderTest
     {
         [Fact]
-        public void Order_Invalid_When_Missing_Required_Fields()
+        public void TC4_Order_Invalid_When_Missing_Required_Fields()
         {
             // 1. Arrange: Tạo Order thiếu dữ liệu (UserId = 0, Địa chỉ trống)
             var order = new Order()

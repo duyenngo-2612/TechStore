@@ -67,7 +67,7 @@ namespace TechStore.Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task TC07_PlaceOrder_WithoutLogin_RedirectsToLogin()
+        public async Task TC06_PlaceOrder_WithoutLogin_RedirectsToLogin()
         {
             var formData = new Dictionary<string, string> { { "paymentMethod", "COD" } };
             var content = new FormUrlEncodedContent(formData);
@@ -78,7 +78,7 @@ namespace TechStore.Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task TC08_PlaceOrder_COD_WithValidSession_RedirectsToOrderSuccess()
+        public async Task TC07_PlaceOrder_COD_WithValidSession_RedirectsToOrderSuccess()
         {
             var authenticatedClient = _factory.WithWebHostBuilder(builder =>
             {
